@@ -1,9 +1,5 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "interaction-recorder",
-  "metadata": {
-    "description": "Record polished demo videos of any codebase's UI with narration, sound design, and motion graphics"
-  },
+  "name": "my-plugins",
   "owner": {
     "name": "Prakhar Bhardwaj",
     "url": "https://github.com/prakhar625"
@@ -19,7 +15,6 @@
       },
       "source": "./plugins/interaction-recorder",
       "category": "video-production",
-      "homepage": "https://github.com/prakhar625/interaction-recorder",
       "tags": [
         "video",
         "automation",
