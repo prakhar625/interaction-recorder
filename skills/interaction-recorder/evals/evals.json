@@ -1,0 +1,126 @@
+{
+  "test_cases": [
+    {
+      "name": "Quick README demo",
+      "prompt": "Can you record a quick demo video of this app for the README?",
+      "expected_trigger": "/record-quick",
+      "expected_tier": "walkthrough",
+      "expected_scope": "end-to-end",
+      "expected_behaviors": [
+        "Runs Phase 1-3 then auto-generates plan from flow map",
+        "Generates ALL narration clips BEFORE recording (audio-first)",
+        "Creates timing-manifest.json from narration durations",
+        "Records each segment as a SEPARATE video file (new browser context per segment)",
+        "Each segment duration = narration_duration + 0.5s buffer",
+        "Injects SVG cursor into Playwright page (with load event re-injection)",
+        "Normalizes ALL audio to 44100Hz stereo WAV immediately after download",
+        "Validates audio format before proceeding to recording",
+        "Generates start card via Playwright HTML screenshot (animated in Remotion)",
+        "Generates end card via Playwright HTML screenshot (animated in Remotion)",
+        "Generates click + transition sound effects via ffmpeg synthesis",
+        "Generates ambient background music loop via ffmpeg synthesis",
+        "Assembles via Remotion (BrowserFrame + ClickZoom + FadeTransition + TitleCard)",
+        "Uses click-zoom overlay on all click actions",
+        "Adds fade transitions between segments",
+        "Background music ducked under narration",
+        "Click sounds triggered at action manifest timestamps",
+        "Falls back to ffmpeg-only if Remotion fails WITH explicit warning",
+        "Checks if app is already running before starting it",
+        "Loads API keys from .env using load-env.sh or dotenv",
+        "Uses absolute paths via $WORKSPACE in all scripts",
+        "Prints progress at each generation step"
+      ]
+    },
+    {
+      "name": "Polished investor pitch with AI cards",
+      "prompt": "I need a polished demo video for an investor presentation. Use production quality with AI-generated title cards. Record each feature as a separate clip.",
+      "expected_trigger": "/record-demo",
+      "expected_tier": "production",
+      "expected_scope": "chunks",
+      "expected_behaviors": [
+        "Asks about every config option during planning",
+        "Validates TTS provider with a test request during Phase 3/4",
+        "Presents full storyboard for approval before executing",
+        "Generates AI title cards via FAL Flux image gen",
+        "Records each chunk as independent per-segment video",
+        "Produces individual chunk files AND combined version",
+        "Uses Remotion with all features: zoom, annotations, transitions, music, cards",
+        "Start and end cards have spring-animated text entry"
+      ]
+    },
+    {
+      "name": "Planning only",
+      "prompt": "Help me plan a demo video for this project. Don't record yet, just give me the storyboard.",
+      "expected_trigger": "/record-plan",
+      "expected_phases": "1-4 only",
+      "expected_behaviors": [
+        "Does NOT proceed to Phase 5-9",
+        "Outputs: flow map, storyboard, theme proposal, duration estimate",
+        "Validates TTS provider availability",
+        "Lists all tabs/sub-sections within each view",
+        "Extracts design tokens for theme matching",
+        "Plans start/end card content",
+        "Plans sound effects and background music style"
+      ]
+    },
+    {
+      "name": "ElevenLabs via FAL misconception",
+      "prompt": "Record a demo with ElevenLabs TTS through FAL's router.",
+      "expected_behaviors": [
+        "Clarifies that FAL does NOT route ElevenLabs",
+        "Explains FAL offers MiniMax and Chatterbox TTS",
+        "Asks if user wants FAL MiniMax, direct ElevenLabs, or other",
+        "Does NOT blindly attempt the non-existent endpoint"
+      ]
+    },
+    {
+      "name": "App already running",
+      "prompt": "Record a demo of my app that's already running on localhost:8000",
+      "expected_behaviors": [
+        "Checks if app is running first (curl health check)",
+        "Does NOT try to start the app if it's already responding",
+        "Proceeds directly to recording workflow"
+      ]
+    },
+    {
+      "name": "Audio-first enforcement",
+      "prompt": "Record a walkthrough of my dashboard at localhost:3000. I want narration explaining each section.",
+      "expected_behaviors": [
+        "Phase 6 generates ALL narration clips before Phase 7 starts",
+        "timing-manifest.json is created before any recording begins",
+        "Recordings are per-segment (separate files), NOT one continuous recording",
+        "Each segment duration is paced by its narration clip duration",
+        "No uniform speed adjustment or time-stretching of the entire recording",
+        "Narration normalized to 44100Hz stereo WAV immediately after download"
+      ]
+    },
+    {
+      "name": "Remotion enforcement",
+      "prompt": "Make a demo video of my app with a nice browser frame, click-zoom effects, and smooth transitions.",
+      "expected_behaviors": [
+        "Sets up Remotion project deterministically (writes files directly, no npx create-video)",
+        "Uses BrowserFrame component with rounded corners and shadow",
+        "Uses ClickZoomOverlay component for zoom on clicks",
+        "Uses FadeTransition component between segments",
+        "Uses GradientBackground component for canvas background",
+        "Uses animated TitleCard for start/end cards",
+        "Renders via npx remotion render, NOT ffmpeg as primary",
+        "ffmpeg used only for post-compression and thumbnail",
+        "If Remotion fails, warns Asker about degraded quality before falling back"
+      ]
+    },
+    {
+      "name": "Sound and music presence",
+      "prompt": "Record a quick walkthrough demo with narration. Use the FAL TTS.",
+      "expected_behaviors": [
+        "Generates click sound effect (short sine burst)",
+        "Generates transition sound effect (pink noise sweep)",
+        "Generates ambient background music loop (low-volume drone)",
+        "All sound files are 44100Hz stereo WAV",
+        "Click sounds placed at action timestamps in Remotion",
+        "Background music loops and ducks under narration",
+        "Transition sound plays at segment boundaries"
+      ]
+    }
+  ]
+}

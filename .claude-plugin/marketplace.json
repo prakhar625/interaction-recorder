@@ -1,0 +1,19 @@
+{
+  "name": "interaction-recorder",
+  "owner": {
+    "name": "Prakhar Bhardwaj",
+    "url": "https://github.com/prakhar625"
+  },
+  "metadata": {
+    "description": "Record polished demo videos of any codebase's UI with narration, sound design, and motion graphics",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "interaction-recorder",
+      "source": ".",
+      "description": "Record polished demo videos of any codebase's UI — from quick screen captures to fully narrated, annotated productions with graphics, sound design, and transitions. Uses Playwright for browser automation, Remotion for video compositing, and supports TTS, image generation, and sound design.",
+      "version": "1.0.0"
+    }
+  ]
+}
