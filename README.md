@@ -44,11 +44,10 @@ Restart Claude Code after installing.
 
 ```bash
 git clone https://github.com/prakhar625/interaction-recorder.git
-cp -r interaction-recorder/skills/* ~/.claude/skills/
-cp -r interaction-recorder/commands/* ~/.claude/commands/
+cp -r interaction-recorder/plugins/interaction-recorder ~/.claude/plugins/
 ```
 
-Restart Claude Code.
+Then enable it in Claude Code with `/plugin`.
 
 ---
 
@@ -132,41 +131,29 @@ Without a TTS key, the skill falls back to screencast tier (no narration). Witho
 ## What's Inside
 
 ```
-interaction-recorder/
+interaction-recorder/                        ← marketplace repo
 ├── .claude-plugin/
-│   ├── plugin.json                   # Plugin manifest
-│   └── marketplace.json              # Marketplace metadata
-├── .claude/
-│   ├── commands/                     # Slash commands
-│   │   ├── record-quick.md           # /record-quick
-│   │   ├── record-demo.md            # /record-demo
-│   │   ├── record-plan.md            # /record-plan
-│   │   └── record-review.md          # /record-review
-│   └── skills/interaction-recorder/
-│       ├── SKILL.md                  # Main skill instructions
-│       ├── references/
-│       │   ├── repo-analysis.md      # How to analyze the target codebase
-│       │   ├── flow-mapping.md       # UI flow discovery
-│       │   ├── limitations-check.md  # What can/can't be recorded
-│       │   ├── planning.md           # Storyboard generation
-│       │   ├── presets.md            # Quality tier defaults
-│       │   ├── config.md             # Full config reference
-│       │   ├── tool-setup.md         # Workspace + Remotion setup
-│       │   ├── asset-generation.md   # TTS, cards, AI sounds, AI music
-│       │   ├── recording.md          # Per-segment Playwright recording
-│       │   ├── video-assembly.md     # Remotion composition + ffmpeg fallback
-│       │   ├── quality-review.md     # Two-stage quality review + preferences
-│       │   ├── auth-patterns.md      # Auth patterns for protected apps
-│       │   └── remotion-docs.md      # Remotion API reference
-│       ├── assets/remotion-templates/ # Starter Remotion components
-│       ├── scripts/
-│       │   ├── normalize-audio.sh    # Canonical 44100Hz stereo WAV normalization
-│       │   └── validate-workspace.sh # Pre-flight workspace validation
-│       └── evals/                    # Test cases
-├── hooks/
-│   ├── hooks.json                    # Plugin hooks (auto .env loading)
-│   └── load-env.sh                   # SessionStart hook script
-└── README.md
+│   └── marketplace.json                     # Marketplace catalog
+├── plugins/
+│   └── interaction-recorder/                ← plugin (self-contained)
+│       ├── .claude-plugin/
+│       │   └── plugin.json                  # Plugin manifest
+│       ├── commands/
+│       │   ├── record-quick.md              # /record-quick
+│       │   ├── record-demo.md               # /record-demo
+│       │   ├── record-plan.md               # /record-plan
+│       │   └── record-review.md             # /record-review
+│       ├── skills/interaction-recorder/
+│       │   ├── SKILL.md                     # Main skill instructions
+│       │   ├── references/                  # Phase-by-phase reference docs
+│       │   ├── assets/remotion-templates/   # Starter Remotion components
+│       │   ├── scripts/                     # Utility scripts
+│       │   └── evals/                       # Test cases
+│       └── hooks/
+│           ├── hooks.json                   # Plugin hooks
+│           └── load-env.sh                  # Auto .env loading
+├── README.md
+└── LICENSE
 ```
 
 ---
