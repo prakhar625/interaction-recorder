@@ -24,6 +24,25 @@
         "sound-design",
         "motion-graphics"
       ]
+    },
+    {
+      "name": "skill-best-practices",
+      "description": "Comprehensive guide for building Claude Code skills and plugins. Teaches best practices and interactively scaffolds new skills with /create-skill.",
+      "version": "2026.2.21.0001",
+      "author": {
+        "name": "Prakhar Bhardwaj",
+        "url": "https://github.com/prakhar625"
+      },
+      "source": "./plugins/skill-best-practices",
+      "category": "developer-tools",
+      "tags": [
+        "skills",
+        "plugins",
+        "best-practices",
+        "scaffolding",
+        "developer-tools",
+        "meta"
+      ]
     }
   ]
 }
