@@ -1,7 +1,6 @@
 {
   "name": "interaction-recorder",
-  "description": "Record polished demo videos of any codebase's UI — from quick screen captures to fully narrated, annotated productions with graphics, sound design, and transitions. Uses Playwright for browser automation, Remotion for video compositing, and supports TTS via FAL MiniMax, ElevenLabs, or local piper.",
-  "version": "1.0.0",
+  "description": "Record polished demo videos of any codebase's UI — from quick screen captures to fully narrated, annotated productions with graphics, sound design, and transitions.",
   "author": {
     "name": "Prakhar Bhardwaj",
     "url": "https://github.com/prakhar625"

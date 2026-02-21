@@ -24,6 +24,8 @@ Point it at any running web app and get a production-quality demo video. The ski
 - **Audio-first** — all narration is generated before recording, so video is paced by the script (no awkward speed adjustments)
 - **Per-segment recording** — each section is a separate video file matched to its narration duration
 - **Remotion compositing** — professional assembly with layered browser frames, click-zoom overlays, spring-animated title cards, and audio ducking
+- **AI sound design** — sound effects and background music generated via FAL AI models (ElevenLabs SFX, Beatoven, CassetteAI), with ffmpeg synthesis as fallback
+- **Session persistence** — preferences (design tokens, TTS provider, theme) are saved between recordings so subsequent runs skip re-discovery
 
 ## Installation
 
@@ -63,7 +65,7 @@ Claude:
   ✓ Generating narration (14 segments via FAL MiniMax)
   ✓ Recording segments (audio-first, per-segment pacing)
   ✓ Assembling with Remotion (browser frame, click-zoom, transitions)
-  ✓ Adding sound design (click sounds, ambient music)
+  ✓ Adding AI sound design (click effects, ambient music via FAL)
 
   → output/demo.mp4 (4:30, 1080p, 14.2MB)
 ```
@@ -91,7 +93,7 @@ Phase 5:    Set up workspace (Playwright, Remotion, API keys)
 Phase 6:    Generate ALL narration + cards + sounds + music
 Phase 7:    Record each segment (duration matched to narration)
 Phase 8:    Assemble in Remotion (layers, transitions, audio ducking)
-Phase 9:    Deliver final video
+Phase 9:    Quality review & deliver final video
 ```
 
 ---
@@ -103,6 +105,7 @@ Phase 9:    Deliver final video
 | `/record-quick` | Quick recording with smart defaults, no planning phase |
 | `/record-demo` | Full interactive workflow with planning checkpoint |
 | `/record-plan` | Generate storyboard only, don't record |
+| `/record-review` | Post-recording quality critique and re-record suggestions |
 
 The skill also triggers automatically when you say things like "record a demo", "make a walkthrough video", "capture my UI", etc.
 
@@ -118,38 +121,52 @@ The skill also triggers automatically when you say things like "record a demo", 
 - Playwright + Chromium (for recording)
 - Remotion (for video assembly)
 
-**Optional (for narration):**
-- `FAL_KEY` in `.env` — for MiniMax or Chatterbox TTS via [fal.ai](https://fal.ai)
+**Optional (for narration + AI sound design):**
+- `FAL_KEY` in `.env` — for MiniMax or Chatterbox TTS, ElevenLabs SFX, Beatoven/CassetteAI music via [fal.ai](https://fal.ai)
 - `ELEVENLABS_API_KEY` in `.env` — for ElevenLabs TTS directly
 
-Without a TTS key, the skill falls back to screencast tier (no narration).
+Without a TTS key, the skill falls back to screencast tier (no narration). Without a FAL key, sound effects and music fall back to ffmpeg synthesis.
 
 ---
 
 ## What's Inside
 
 ```
-skills/interaction-recorder/
-├── SKILL.md                          # Main skill instructions
-├── references/
-│   ├── repo-analysis.md              # How to analyze the target codebase
-│   ├── flow-mapping.md               # UI flow discovery
-│   ├── limitations-check.md          # What can/can't be recorded
-│   ├── planning.md                   # Storyboard generation
-│   ├── presets.md                     # Quality tier defaults
-│   ├── tool-setup.md                 # Workspace + Remotion setup
-│   ├── asset-generation.md           # TTS, cards, sounds, music
-│   ├── recording.md                  # Per-segment Playwright recording
-│   ├── video-assembly.md             # Remotion composition + ffmpeg fallback
-│   └── remotion-docs.md              # Remotion API reference
-├── assets/remotion-templates/        # Starter Remotion components
-│   ├── BrowserFrame.tsx
-│   ├── ClickZoomOverlay.tsx
-│   ├── AnnotationOverlay.tsx
-│   ├── FadeTransition.tsx            # + animated TitleCard
-│   └── GradientBackground.tsx
-├── scripts/                          # Setup + utility scripts
-└── evals/                            # Test cases
+interaction-recorder/
+├── .claude-plugin/
+│   ├── plugin.json                   # Plugin manifest
+│   └── marketplace.json              # Marketplace metadata
+├── .claude/
+│   ├── commands/                     # Slash commands
+│   │   ├── record-quick.md           # /record-quick
+│   │   ├── record-demo.md            # /record-demo
+│   │   ├── record-plan.md            # /record-plan
+│   │   └── record-review.md          # /record-review
+│   └── skills/interaction-recorder/
+│       ├── SKILL.md                  # Main skill instructions
+│       ├── references/
+│       │   ├── repo-analysis.md      # How to analyze the target codebase
+│       │   ├── flow-mapping.md       # UI flow discovery
+│       │   ├── limitations-check.md  # What can/can't be recorded
+│       │   ├── planning.md           # Storyboard generation
+│       │   ├── presets.md            # Quality tier defaults
+│       │   ├── config.md             # Full config reference
+│       │   ├── tool-setup.md         # Workspace + Remotion setup
+│       │   ├── asset-generation.md   # TTS, cards, AI sounds, AI music
+│       │   ├── recording.md          # Per-segment Playwright recording
+│       │   ├── video-assembly.md     # Remotion composition + ffmpeg fallback
+│       │   ├── quality-review.md     # Two-stage quality review + preferences
+│       │   ├── auth-patterns.md      # Auth patterns for protected apps
+│       │   └── remotion-docs.md      # Remotion API reference
+│       ├── assets/remotion-templates/ # Starter Remotion components
+│       ├── scripts/
+│       │   ├── normalize-audio.sh    # Canonical 44100Hz stereo WAV normalization
+│       │   └── validate-workspace.sh # Pre-flight workspace validation
+│       └── evals/                    # Test cases
+├── hooks/
+│   ├── hooks.json                    # Plugin hooks (auto .env loading)
+│   └── load-env.sh                   # SessionStart hook script
+└── README.md
 ```
 
 ---

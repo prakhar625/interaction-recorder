@@ -9,6 +9,9 @@ output/
 *.wav
 *.mp3
 
+# Preferences (per-repo, user-specific)
+.interaction-recorder/
+
 # Environment
 .env
 .env.local

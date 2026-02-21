@@ -358,7 +358,89 @@ async function generateCardFAL(prompt, outputPath) {
 
 ## 3. Sound Effects (NON-OPTIONAL for walkthrough+)
 
-Generate subtle UI sounds using ffmpeg synthesis. All output must be 44100Hz stereo WAV.
+Generate UI sounds via FAL AI models. All output must be normalized to 44100Hz stereo WAV.
+
+### Provider Priority
+
+1. **FAL ElevenLabs SFX v2** (recommended) — `fal-ai/elevenlabs/sound-effects/v2`
+2. **FAL Beatoven SFX** — `beatoven/sound-effect-generation`
+3. **FAL CassetteAI SFX** — `cassetteai/sound-effects-generator`
+4. **ffmpeg synthesis** (fallback if no FAL_KEY)
+
+### FAL ElevenLabs SFX v2 (Primary)
+
+```javascript
+async function generateSoundEffect(description, outputWavPath, durationSeconds) {
+  const FAL_KEY = process.env.FAL_KEY;
+  if (!FAL_KEY) throw new Error('FAL_KEY not set — will use ffmpeg fallback');
+
+  const response = await apiCallWithRetry(async () => {
+    const resp = await fetch('https://fal.run/fal-ai/elevenlabs/sound-effects/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${FAL_KEY}`,
+      },
+      body: JSON.stringify({
+        text: description,
+        duration_seconds: durationSeconds || 1.5,
+        prompt_influence: 0.3,
+      }),
+    });
+    if (!resp.ok) throw new Error(`FAL SFX error ${resp.status}: ${await resp.text()}`);
+    return resp.json();
+  });
+
+  const audioUrl = response.audio?.url;
+  if (!audioUrl) throw new Error('FAL SFX returned no audio URL');
+
+  const audioResp = await fetch(audioUrl);
+  const rawBuffer = Buffer.from(await audioResp.arrayBuffer());
+  const tempPath = outputWavPath.replace('.wav', '.raw.mp3');
+  fs.writeFileSync(tempPath, rawBuffer);
+  normalizeAudio(tempPath, outputWavPath);
+  fs.unlinkSync(tempPath);
+  validateAudioFormat(outputWavPath);
+}
+```
+
+### FAL Beatoven SFX (Alternative)
+
+```javascript
+async function generateSoundEffectBeatoven(description, outputWavPath, durationSeconds) {
+  const response = await apiCallWithRetry(async () => {
+    const resp = await fetch('https://fal.run/beatoven/sound-effect-generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${process.env.FAL_KEY}`,
+      },
+      body: JSON.stringify({
+        prompt: description,
+        duration: durationSeconds || 2,
+        refinement: 40,
+        creativity: 10,
+      }),
+    });
+    if (!resp.ok) throw new Error(`Beatoven SFX error ${resp.status}`);
+    return resp.json();
+  });
+
+  // Note: Beatoven returns 'audio' key with WAV at 44.1kHz
+  const audioUrl = response.audio?.url;
+  if (!audioUrl) throw new Error('Beatoven SFX returned no audio URL');
+
+  const audioResp = await fetch(audioUrl);
+  const rawBuffer = Buffer.from(await audioResp.arrayBuffer());
+  const tempPath = outputWavPath.replace('.wav', '.raw.wav');
+  fs.writeFileSync(tempPath, rawBuffer);
+  normalizeAudio(tempPath, outputWavPath); // Still normalize to ensure 44100Hz stereo
+  fs.unlinkSync(tempPath);
+  validateAudioFormat(outputWavPath);
+}
+```
+
+### ffmpeg Synthesis (Fallback — no API key needed)
 
 ```bash
 SOUNDS_DIR="${WORKSPACE}/assets/sounds"
@@ -375,7 +457,7 @@ ffmpeg -y -f lavfi -i "anoisesrc=d=0.3:c=pink:a=0.1" \
   -af "afade=t=in:d=0.1,afade=t=out:st=0.15:d=0.15,highpass=f=300,lowpass=f=2000" \
   "${SOUNDS_DIR}/transition.wav" 2>/dev/null
 
-# Success: two-tone chime (for end card)
+# Success: two-tone chime
 ffmpeg -y -f lavfi -i "sine=frequency=800:duration=0.15" \
   -f lavfi -i "sine=frequency=1200:duration=0.15" \
   -filter_complex "[0:a]adelay=0|0[a];[1:a]adelay=100|100[b];[a][b]amix=2:duration=longest,\
@@ -384,12 +466,35 @@ ffmpeg -y -f lavfi -i "sine=frequency=800:duration=0.15" \
   "${SOUNDS_DIR}/success.wav" 2>/dev/null
 ```
 
-Write sound map:
-```json
-{
-  "click": "assets/sounds/click.wav",
-  "transition": "assets/sounds/transition.wav",
-  "success": "assets/sounds/success.wav"
+### Sound Effect Generation (orchestrator)
+
+```javascript
+async function generateAllSounds(workspace, config) {
+  const SOUNDS_DIR = path.join(workspace, 'assets', 'sounds');
+
+  const sounds = [
+    { name: 'click', prompt: 'Clean subtle UI button click, digital interface tap sound, minimal and crisp', duration: 0.5 },
+    { name: 'transition', prompt: 'Soft gentle whoosh transition sound, brief page turn sweep, subtle and clean', duration: 0.8 },
+    { name: 'success', prompt: 'Pleasant two-tone success chime notification, positive achievement sound, short and subtle', duration: 1.0 },
+  ];
+
+  for (const sound of sounds) {
+    const outPath = path.join(SOUNDS_DIR, `${sound.name}.wav`);
+    try {
+      await generateSoundEffect(sound.prompt, outPath, sound.duration);
+      console.log(`  ✅ ${sound.name}.wav (FAL AI)`);
+    } catch (error) {
+      console.error(`  ⚠️ FAL SFX failed for ${sound.name}: ${error.message}. Using ffmpeg fallback.`);
+      // Fall back to ffmpeg synthesis (run the bash commands above)
+    }
+  }
+
+  // Write sound map
+  fs.writeFileSync(path.join(SOUNDS_DIR, 'sound-map.json'), JSON.stringify({
+    click: 'assets/sounds/click.wav',
+    transition: 'assets/sounds/transition.wav',
+    success: 'assets/sounds/success.wav',
+  }, null, 2));
 }
 ```
 
@@ -400,7 +505,107 @@ should output `44100,2`.
 
 ## 4. Background Music (NON-OPTIONAL for walkthrough+)
 
-Generate a subtle ambient loop using ffmpeg. Keep it very low volume and unobtrusive.
+Generate ambient background music via FAL AI. Keep it very low volume and unobtrusive.
+
+### Provider Priority
+
+1. **FAL Beatoven Music** (recommended) — `beatoven/music-generation` (up to 2.5 minutes, copyright-safe)
+2. **FAL CassetteAI Music** — `cassetteai/music-generator` (up to 3 minutes, very fast)
+3. **FAL Stable Audio 2.5** — `fal-ai/stable-audio-25/text-to-audio` (up to 3+ minutes)
+4. **ffmpeg synthesis** (fallback if no FAL_KEY)
+
+### FAL Beatoven Music (Primary)
+
+```javascript
+async function generateBackgroundMusic(workspace, config) {
+  const FAL_KEY = process.env.FAL_KEY;
+  if (!FAL_KEY) throw new Error('FAL_KEY not set — will use ffmpeg fallback');
+
+  const MUSIC_DIR = path.join(workspace, 'assets', 'music');
+  const outputPath = path.join(MUSIC_DIR, 'ambient-loop.wav');
+
+  // Determine music style from config
+  const stylePrompts = {
+    ambient: 'Calm ambient background music for a software demo video, subtle and unobtrusive, lo-fi electronic texture, no prominent melody, gentle warmth, suitable for looping',
+    upbeat: 'Light upbeat background music for a tech product demo, positive energy, clean electronic beats, not too busy, suitable for looping',
+    minimal: 'Minimal ambient texture for a professional software walkthrough, barely there background atmosphere, very subtle, suitable for looping',
+  };
+  const style = config.background_music?.style || 'ambient';
+  const prompt = config.background_music?.prompt || stylePrompts[style] || stylePrompts.ambient;
+
+  const response = await apiCallWithRetry(async () => {
+    const resp = await fetch('https://fal.run/beatoven/music-generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${FAL_KEY}`,
+      },
+      body: JSON.stringify({
+        prompt,
+        duration: 60,       // 60 seconds — will be looped in Remotion
+        refinement: 80,
+        creativity: 12,
+      }),
+    });
+    if (!resp.ok) throw new Error(`Beatoven Music error ${resp.status}: ${await resp.text()}`);
+    return resp.json();
+  });
+
+  // Beatoven returns 'audio' key with WAV at 44.1kHz
+  const audioUrl = response.audio?.url;
+  if (!audioUrl) throw new Error('Beatoven Music returned no audio URL');
+
+  const audioResp = await fetch(audioUrl);
+  const rawBuffer = Buffer.from(await audioResp.arrayBuffer());
+  const tempPath = outputPath.replace('.wav', '.raw.wav');
+  fs.writeFileSync(tempPath, rawBuffer);
+  normalizeAudio(tempPath, outputPath);
+  fs.unlinkSync(tempPath);
+  validateAudioFormat(outputPath);
+  console.log(`✅ Background music: ambient-loop.wav (FAL Beatoven)`);
+}
+```
+
+### FAL CassetteAI Music (Alternative — faster)
+
+```javascript
+async function generateBackgroundMusicCassette(workspace, config) {
+  const prompt = config.background_music?.prompt ||
+    'Calm ambient lo-fi electronic background music, subtle texture, suitable for software demo';
+
+  const response = await apiCallWithRetry(async () => {
+    const resp = await fetch('https://fal.run/cassetteai/music-generator', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${process.env.FAL_KEY}`,
+      },
+      body: JSON.stringify({
+        prompt,
+        duration: 60,
+      }),
+    });
+    if (!resp.ok) throw new Error(`CassetteAI Music error ${resp.status}`);
+    return resp.json();
+  });
+
+  // Note: CassetteAI returns 'audio_file' key (NOT 'audio')
+  const audioUrl = response.audio_file?.url;
+  if (!audioUrl) throw new Error('CassetteAI Music returned no audio URL');
+
+  const audioResp = await fetch(audioUrl);
+  const rawBuffer = Buffer.from(await audioResp.arrayBuffer());
+  const outputPath = path.join(workspace, 'assets', 'music', 'ambient-loop.wav');
+  const tempPath = outputPath.replace('.wav', '.raw.wav');
+  fs.writeFileSync(tempPath, rawBuffer);
+  normalizeAudio(tempPath, outputPath);
+  fs.unlinkSync(tempPath);
+  validateAudioFormat(outputPath);
+  console.log(`✅ Background music: ambient-loop.wav (FAL CassetteAI)`);
+}
+```
+
+### ffmpeg Synthesis (Fallback — no API key needed)
 
 ```bash
 MUSIC_DIR="${WORKSPACE}/assets/music"
@@ -418,11 +623,22 @@ ffmpeg -y \
   -ar 44100 -ac 2 -c:a pcm_s16le \
   "${MUSIC_DIR}/ambient-loop.wav" 2>/dev/null
 
-echo "✅ Background music: ambient-loop.wav"
+echo "⚠️ Background music: ambient-loop.wav (ffmpeg fallback — lower quality)"
 ```
 
 The background music will be looped in the Remotion composition and automatically
 ducked to 30% volume when narration is playing.
+
+### Important: FAL Model Response Key Differences
+
+| Model | Output key | Format |
+|-------|-----------|--------|
+| ElevenLabs SFX v2 | `response.audio.url` | MP3 |
+| Beatoven (SFX + Music) | `response.audio.url` | WAV 44.1kHz |
+| CassetteAI (SFX + Music) | `response.audio_file.url` | WAV |
+| Stable Audio 2.5 | `response.audio.url` | WAV |
+
+Always normalize to 44100Hz stereo WAV regardless of source format.
 
 ---
 

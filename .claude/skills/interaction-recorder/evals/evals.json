@@ -8,6 +8,8 @@
       "expected_scope": "end-to-end",
       "expected_behaviors": [
         "Runs Phase 1-3 then auto-generates plan from flow map",
+        "Shows intent checkpoint after Phase 2 (summary of views, TTS provider, estimated duration)",
+        "Waits for Asker confirmation before proceeding past intent checkpoint",
         "Generates ALL narration clips BEFORE recording (audio-first)",
         "Creates timing-manifest.json from narration durations",
         "Records each segment as a SEPARATE video file (new browser context per segment)",
@@ -17,8 +19,8 @@
         "Validates audio format before proceeding to recording",
         "Generates start card via Playwright HTML screenshot (animated in Remotion)",
         "Generates end card via Playwright HTML screenshot (animated in Remotion)",
-        "Generates click + transition sound effects via ffmpeg synthesis",
-        "Generates ambient background music loop via ffmpeg synthesis",
+        "Generates click + transition sound effects via FAL AI (ElevenLabs SFX v2 primary, ffmpeg fallback)",
+        "Generates ambient background music via FAL AI (Beatoven primary, CassetteAI alternative, ffmpeg fallback)",
         "Assembles via Remotion (BrowserFrame + ClickZoom + FadeTransition + TitleCard)",
         "Uses click-zoom overlay on all click actions",
         "Adds fade transitions between segments",
@@ -28,7 +30,9 @@
         "Checks if app is already running before starting it",
         "Loads API keys from .env using load-env.sh or dotenv",
         "Uses absolute paths via $WORKSPACE in all scripts",
-        "Prints progress at each generation step"
+        "Prints progress at each generation step",
+        "Runs Phase 9 quality review (spec compliance + quality checks)",
+        "Offers to save preferences to .interaction-recorder/preferences.json after success"
       ]
     },
     {
@@ -45,7 +49,10 @@
         "Records each chunk as independent per-segment video",
         "Produces individual chunk files AND combined version",
         "Uses Remotion with all features: zoom, annotations, transitions, music, cards",
-        "Start and end cards have spring-animated text entry"
+        "Start and end cards have spring-animated text entry",
+        "Sound effects generated via FAL AI (not just ffmpeg synthesis)",
+        "Background music generated via FAL AI (Beatoven or CassetteAI)",
+        "Runs two-stage quality review in Phase 9"
       ]
     },
     {
@@ -60,14 +67,15 @@
         "Lists all tabs/sub-sections within each view",
         "Extracts design tokens for theme matching",
         "Plans start/end card content",
-        "Plans sound effects and background music style"
+        "Plans sound effects and background music style",
+        "Loads preferences from .interaction-recorder/preferences.json if it exists"
       ]
     },
     {
       "name": "ElevenLabs via FAL misconception",
       "prompt": "Record a demo with ElevenLabs TTS through FAL's router.",
       "expected_behaviors": [
-        "Clarifies that FAL does NOT route ElevenLabs",
+        "Clarifies that FAL does NOT route ElevenLabs TTS",
         "Explains FAL offers MiniMax and Chatterbox TTS",
         "Asks if user wants FAL MiniMax, direct ElevenLabs, or other",
         "Does NOT blindly attempt the non-existent endpoint"
@@ -99,6 +107,7 @@
       "prompt": "Make a demo video of my app with a nice browser frame, click-zoom effects, and smooth transitions.",
       "expected_behaviors": [
         "Sets up Remotion project deterministically (writes files directly, no npx create-video)",
+        "Pins Remotion packages to version 4.0.242",
         "Uses BrowserFrame component with rounded corners and shadow",
         "Uses ClickZoomOverlay component for zoom on clicks",
         "Uses FadeTransition component between segments",
@@ -110,16 +119,70 @@
       ]
     },
     {
-      "name": "Sound and music presence",
+      "name": "AI sound and music generation",
       "prompt": "Record a quick walkthrough demo with narration. Use the FAL TTS.",
       "expected_behaviors": [
-        "Generates click sound effect (short sine burst)",
-        "Generates transition sound effect (pink noise sweep)",
-        "Generates ambient background music loop (low-volume drone)",
-        "All sound files are 44100Hz stereo WAV",
+        "Generates click sound effect via FAL ElevenLabs SFX v2 (prompt: 'UI button click')",
+        "Generates transition sound effect via FAL ElevenLabs SFX v2 (prompt: 'soft whoosh transition')",
+        "If FAL SFX fails, falls back to Beatoven SFX, then to ffmpeg synthesis with explicit warning",
+        "Generates ambient background music via FAL Beatoven or CassetteAI",
+        "If FAL music fails, falls back to ffmpeg synthesis with explicit warning",
+        "All sound files normalized to 44100Hz stereo WAV immediately after download",
         "Click sounds placed at action timestamps in Remotion",
         "Background music loops and ducks under narration",
         "Transition sound plays at segment boundaries"
+      ]
+    },
+    {
+      "name": "Post-recording quality review",
+      "prompt": "I just finished recording a demo. Can you review the quality before I share it?",
+      "expected_trigger": "/record-review",
+      "expected_behaviors": [
+        "Locates the interaction-recorder-workspace/ directory",
+        "Runs spec compliance check (storyboard segments vs recordings, action manifest errors)",
+        "Runs quality check (timing drift ±1.5s, audio formats, file sizes, output streams)",
+        "Presents structured quality report with pass/fail counts",
+        "Lists specific issues with segment numbers and fix suggestions",
+        "Offers to re-record specific segments if issues found",
+        "Does NOT re-record without Asker confirmation"
+      ]
+    },
+    {
+      "name": "Preferences persistence",
+      "prompt": "Record a demo of my app. I recorded one last week too.",
+      "expected_behaviors": [
+        "Checks for .interaction-recorder/preferences.json in the repo root",
+        "If found, loads saved preferences (design tokens, TTS provider, app config, theme)",
+        "Reports to Asker: 'Found saved preferences from a previous recording'",
+        "Uses saved preferences as defaults instead of re-discovering everything",
+        "Saved preferences can be overridden during planning",
+        "After successful recording, offers to update preferences file"
+      ]
+    },
+    {
+      "name": "Protected app with auth",
+      "prompt": "Record a demo of my app at localhost:3000. It requires logging in first.",
+      "expected_behaviors": [
+        "Detects auth requirement during Phase 3 limitations check",
+        "Reads references/auth-patterns.md for auth strategies",
+        "Asks Asker which auth pattern to use (cookie injection, login flow, etc.)",
+        "Does NOT hardcode or expose credentials in recordings or manifests",
+        "Applies chosen auth pattern before recording segments",
+        "Re-uses auth state across segments (storageState or equivalent)"
+      ]
+    },
+    {
+      "name": "Workspace validation",
+      "prompt": "Record a demo of my app. Make sure everything is set up correctly first.",
+      "expected_behaviors": [
+        "Runs validate-workspace.sh or equivalent checks in Phase 5",
+        "Verifies ffmpeg, ffprobe, Node.js 18+, Playwright, Remotion",
+        "Checks for starter Remotion components (BrowserFrame, ClickZoomOverlay, etc.)",
+        "Verifies symlinks in remotion/public/ for recordings and assets",
+        "Checks API key availability (FAL_KEY or ELEVENLABS_API_KEY)",
+        "Verifies app is reachable at target URL",
+        "Checks all required workspace directories exist",
+        "Reports clear pass/fail status before proceeding"
       ]
     }
   ]

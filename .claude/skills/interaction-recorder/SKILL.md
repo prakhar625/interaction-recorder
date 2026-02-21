@@ -1,14 +1,10 @@
 ---
 name: interaction-recorder
 description: >
-  Record polished demo videos of any codebase's UI — from quick screen captures to fully narrated,
-  annotated productions with graphics, sound design, and transitions. Uses Playwright for browser
-  automation, Remotion for video compositing, and supports TTS (FAL MiniMax / ElevenLabs / local),
-  image generation (FAL / SVG), and sound design (ffmpeg synthesis). Use this skill whenever someone asks
-  for a demo video, walkthrough recording, product demo, UI recording, screen capture of their app,
-  video documentation, or any kind of visual recording of a running application. Also trigger when
-  someone says things like "record my app", "make a demo", "create a walkthrough", "show how this
-  works as a video", "screen record the UI", or "I need a video for the README".
+  Use when someone asks to record, capture, or create a video of a web application's UI.
+  Triggers on: demo video, walkthrough, screen recording, product demo, UI capture, video
+  for README, record my app, make a demo, create a walkthrough, show how this works as a video,
+  screen record the UI, video documentation.
 ---
 
 # Interaction Recorder
@@ -60,10 +56,13 @@ Runs all phases (1→9). Pauses at the plan checkpoint for approval.
 
 ### `/record-quick` — Skip planning, smart defaults
 Skips planning. Analyzes the repo, then immediately records using **walkthrough-tier defaults**.
-Phases: 1→3 (auto), skip 4, then 5→9.
+Phases: 1→3, intent checkpoint, skip 4, then 5→9.
 
 ### `/record-plan` — Plan only, no execution
 Runs phases 1→4 only. Outputs a storyboard without recording.
+
+### `/record-review` — Post-recording quality critique
+Reviews a completed recording for quality issues. Run after any recording session.
 
 ---
 
@@ -74,15 +73,22 @@ PLANNING PHASES
   Phase 1: Repo Analysis          → references/repo-analysis.md
   Phase 2: Flow Mapping           → references/flow-mapping.md
   Phase 3: Limitations Check      → references/limitations-check.md
+                                    (see also: references/auth-patterns.md)
   Phase 4: Planning & Storyboard  → references/planning.md
-      ↓ ← CHECKPOINT (mandatory in /record-demo, skipped in /record-quick)
+      ↓ ← CHECKPOINT (mandatory in /record-demo, intent-only in /record-quick)
 
 EXECUTION PHASES
   Phase 5: Workspace Setup        → references/tool-setup.md
   Phase 6: Asset Generation       → references/asset-generation.md
   Phase 7: Recording              → references/recording.md
   Phase 8: Video Assembly         → references/video-assembly.md
-  Phase 9: Present Output         → (inline)
+  Phase 9: Quality Review         → references/quality-review.md
+
+REFERENCE DOCS
+  Config & presets                → references/config.md
+  Quality tier presets            → references/presets.md
+  Auth patterns                   → references/auth-patterns.md
+  Remotion API                    → references/remotion-docs.md
 ```
 
 ---
@@ -181,6 +187,7 @@ Output: A structured flow map.
 
 **Goal**: Identify blockers.
 Read `references/limitations-check.md` before starting.
+If auth is needed, also read `references/auth-patterns.md`.
 
 - Auth requirements, 3rd-party deps, irreversible actions
 - CAPTCHAs, rate limits, bot detection
@@ -284,13 +291,21 @@ Layer order in Remotion composition:
 Render via `npx remotion render`. Post-process with ffmpeg for compression + thumbnail.
 If Remotion fails: fall back to ffmpeg-only assembly with a warning to the Asker.
 
-### Phase 9 — Present Output
+### Phase 9 — Quality Review & Output
 
-- List all output files with sizes, durations, codec info
-- Verify the output has both video and audio streams
-- Verify audio is audible (check file size > 0, has audio stream)
-- Present to the Asker
-- Offer to re-record specific segments if needed
+**Goal**: Review the recording for quality issues before delivering.
+Read `references/quality-review.md` before starting.
+
+**Two-stage review:**
+1. **Spec compliance** — did we follow the storyboard? Check action manifests for errors,
+   verify all segments recorded correctly, confirm narration files match segment count.
+2. **Quality review** — is the output technically sound? Check timing drift (±1.5s),
+   audio formats, file sizes, final output streams, duration reasonableness.
+
+**After review:**
+- Present quality report to the Asker
+- If issues found: offer to re-record specific segments
+- If clean: offer to save preferences to `.interaction-recorder/preferences.json`
 
 ---
 
@@ -308,9 +323,11 @@ If anything fails:
 |---------|----------|
 | TTS API | Retry 3× (2s/4s/8s backoff) → local TTS (macOS `say` / Linux `espeak-ng`) |
 | FAL image gen | HTML+CSS → Playwright screenshot |
+| FAL SFX/Music | Retry 3× → ffmpeg synthesis (**WARN Asker**: lower audio quality) |
 | Remotion render | ffmpeg-only assembly (**WARN Asker**: no zoom/annotations/animated transitions) |
 | Playwright selector | Screenshot state, log error, skip action, continue recording |
 | App won't start | Check if already running; report exact error to Asker |
+| App requires auth | See `references/auth-patterns.md` for common patterns |
 | API key missing | Check .env files, prompt Asker, validate with test request |
 
 ---
@@ -327,120 +344,16 @@ Phase 8 waits for all Phase 6-7 outputs to exist before starting.
 
 ---
 
-## Config Reference
+## Config & Workspace Reference
 
-```
-scope: "end-to-end" | "chunks"
-quality_tier: "quick-demo" | "walkthrough" | "production"
+See `references/config.md` for the full configuration reference, walkthrough tier defaults,
+and workspace directory layout.
 
-recording:
-  resolution: "1920x1080"
-  browser: "chromium"
-  show_cursor: true
-  click_zoom: true | false
-  click_zoom_level: 1.3
-  browser_frame: true | false
-  browser_frame_style: "minimal" | "full"
+## Session Persistence
 
-narration:
-  enabled: true | false
-  provider: "fal-minimax" | "elevenlabs" | "local"
-  voice_id: string
-  style: "conversational" | "professional" | "energetic"
+After a successful recording, the skill offers to save preferences to
+`.interaction-recorder/preferences.json` in the target repo root. Subsequent recordings
+in the same repo auto-load this file, skipping re-discovery of design tokens, TTS provider,
+app startup configuration, and theme.
 
-start_card:
-  enabled: true | false
-  title: string
-  subtitle: string
-  duration_seconds: 3
-  generation: "html" | "fal"
-
-end_card:
-  enabled: true | false
-  text: string
-  cta: string
-  duration_seconds: 3
-  generation: "html" | "fal"
-
-sounds:
-  enabled: true | false
-  style: "subtle" | "playful" | "minimal"
-  types: ["click", "transition", "success"]
-
-background_music:
-  enabled: true | false
-  style: "ambient" | "upbeat" | "minimal"
-  volume: 0.08
-  duck_under_narration: true
-
-visual:
-  background: "gradient" | "solid" | "none"
-  background_colors: [string]
-  theme: "auto" | "bright" | "minimal" | "dark" | "warm" | "custom"
-  annotations: true | false
-  transitions: "cut" | "fade" | "slide"
-  transition_duration_ms: 300
-
-output:
-  format: "mp4"
-  quality: "draft" | "balanced" | "high"
-  combine_chunks: true | false
-```
-
-### Walkthrough Tier Defaults (used by /record-quick)
-
-- TTS: enabled, FAL MiniMax (if FAL_KEY) or local fallback, conversational style
-- Start card: enabled, HTML-rendered, auto title from repo
-- End card: enabled, "Thanks for watching"
-- Annotations: enabled, auto-generated, minimal style
-- Click-zoom: enabled, 1.3x
-- Sounds: enabled, subtle click + transition
-- Background music: enabled, ambient, volume 0.08
-- Browser frame: enabled, minimal chrome
-- Background: gradient (auto from app CSS colors)
-- Transitions: fade, 300ms
-- Resolution: 1920×1080
-- Output: MP4, balanced quality
-
----
-
-## Workspace Directory Layout
-
-```
-interaction-recorder-workspace/
-├── config.json
-├── timing-manifest.json
-├── storyboard.md
-├── flow-map.md
-├── recordings/
-│   ├── segment-01.mp4
-│   ├── segment-01-manifest.json
-│   ├── segment-01-screenshot.png
-│   └── ...
-├── assets/
-│   ├── narration/
-│   │   ├── segment-01.wav
-│   │   └── ...
-│   ├── cards/
-│   │   ├── start-card.png
-│   │   └── end-card.png
-│   ├── sounds/
-│   │   ├── click.wav
-│   │   ├── transition.wav
-│   │   └── sound-map.json
-│   └── music/
-│       └── ambient-loop.wav
-├── remotion/
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── src/
-│       ├── index.ts
-│       ├── Root.tsx
-│       ├── DemoVideo.tsx
-│       ├── composition-config.json
-│       └── components/
-└── output/
-    ├── demo.mp4
-    ├── demo-thumbnail.png
-    └── chunks/
-```
+See `references/quality-review.md` for the preferences file format and save/load behavior.

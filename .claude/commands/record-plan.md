@@ -1,16 +1,20 @@
 ---
 command: record-plan
 description: Generate a recording plan and storyboard without executing
+disable-model-invocation: true
 ---
 
 # /record-plan
 
 Run planning phases only. Output a detailed storyboard without recording anything.
 
-## Execution Flow
+## Before Starting
 
 1. Read `SKILL.md` for context
-2. Execute phases 1-4 only:
+2. Check for `.interaction-recorder/preferences.json` in the repo root
+   - If it exists, load saved preferences for defaults
+
+## Execution Flow
 
 ```
 Phase 1: Repo Analysis          → read references/repo-analysis.md

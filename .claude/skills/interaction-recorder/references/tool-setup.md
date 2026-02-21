@@ -39,9 +39,11 @@ done
 
 ### Method 2: dotenv (for Node.js scripts)
 
-Every generated Node.js script should load .env at the top:
+Every generated Node.js script should load .env at the top. Resolve the path
+to the target repo's `.env` file (discovered during Phase 1):
 ```javascript
-require('dotenv').config({ path: '/absolute/path/to/repo/.env' });
+// Use the repo root discovered in Phase 1 — replace REPO_ROOT with the actual absolute path
+require('dotenv').config({ path: 'REPO_ROOT/.env' });
 ```
 
 ## Dependency Checks
@@ -93,17 +95,17 @@ cat > package.json << 'PKGEOF'
     "render": "remotion render src/index.ts"
   },
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "remotion": "^4.0.0",
-    "@remotion/cli": "^4.0.0",
-    "@remotion/media": "^4.0.0",
-    "@remotion/transitions": "^4.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.242",
+    "@remotion/cli": "4.0.242",
+    "@remotion/media": "4.0.242",
+    "@remotion/transitions": "4.0.242"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "typescript": "^5.6.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0"
   }
 }
 PKGEOF
@@ -143,17 +145,40 @@ echo "✅ Remotion project ready"
 
 ### Copy Starter Components
 
-Copy the skill's starter Remotion templates into the project:
+Copy the skill's starter Remotion templates into the project.
+
+The templates live inside the skill's `assets/remotion-templates/` directory. Resolve the
+skill root using `${CLAUDE_PLUGIN_ROOT}` (set automatically by the plugin system) or by
+locating the skill directory relative to the workspace:
 
 ```bash
-# From skill assets into the Remotion project
-cp /path/to/skill/assets/remotion-templates/BrowserFrame.tsx "$WORKSPACE/remotion/src/components/"
-cp /path/to/skill/assets/remotion-templates/ClickZoomOverlay.tsx "$WORKSPACE/remotion/src/components/"
-cp /path/to/skill/assets/remotion-templates/GradientBackground.tsx "$WORKSPACE/remotion/src/components/"
-cp /path/to/skill/assets/remotion-templates/AnnotationOverlay.tsx "$WORKSPACE/remotion/src/components/"
-cp /path/to/skill/assets/remotion-templates/FadeTransition.tsx "$WORKSPACE/remotion/src/components/"
+# Resolve the skill's template directory
+# Option 1: Plugin system variable (available when installed as a plugin)
+SKILL_TEMPLATES="${CLAUDE_PLUGIN_ROOT}/.claude/skills/interaction-recorder/assets/remotion-templates"
 
-echo "✅ Starter components copied"
+# Option 2: Fallback — search common locations
+if [ ! -d "$SKILL_TEMPLATES" ]; then
+  for candidate in \
+    "$(dirname "$WORKSPACE")/.claude/skills/interaction-recorder/assets/remotion-templates" \
+    "$HOME/.claude/skills/interaction-recorder/assets/remotion-templates" \
+    "$HOME/.claude/plugins/cache/interaction-recorder/"*"/.claude/skills/interaction-recorder/assets/remotion-templates"; do
+    if [ -d "$candidate" ]; then
+      SKILL_TEMPLATES="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ ! -d "$SKILL_TEMPLATES" ]; then
+  echo "❌ Could not find skill template directory. Remotion components will be written inline."
+else
+  cp "$SKILL_TEMPLATES"/BrowserFrame.tsx "$WORKSPACE/remotion/src/components/"
+  cp "$SKILL_TEMPLATES"/ClickZoomOverlay.tsx "$WORKSPACE/remotion/src/components/"
+  cp "$SKILL_TEMPLATES"/GradientBackground.tsx "$WORKSPACE/remotion/src/components/"
+  cp "$SKILL_TEMPLATES"/AnnotationOverlay.tsx "$WORKSPACE/remotion/src/components/"
+  cp "$SKILL_TEMPLATES"/FadeTransition.tsx "$WORKSPACE/remotion/src/components/"
+  echo "✅ Starter components copied from $SKILL_TEMPLATES"
+fi
 ```
 
 ### Create Asset Symlinks for Remotion
@@ -181,10 +206,10 @@ if [ "$HTTP_CODE" != "000" ]; then
   echo "✅ App already running at $APP_URL (HTTP $HTTP_CODE)"
 else
   echo "Starting app..."
-  cd /path/to/repo
+  cd "$REPO_ROOT"   # REPO_ROOT = the target repo's absolute path from Phase 1
 
-  # Try the start command (adjust per repo)
-  <start-command> &
+  # Try the start command discovered in Phase 1 (e.g., npm run dev, python manage.py runserver)
+  $START_COMMAND &
   APP_PID=$!
 
   # Wait up to 30 seconds for startup
@@ -211,7 +236,17 @@ fi
 
 ## Pre-flight Gate
 
-**DO NOT proceed to Phase 6 until ALL of these pass:**
+**DO NOT proceed to Phase 6 until ALL checks pass.**
+
+Use the validate-workspace script for a comprehensive check:
+
+```bash
+# Run the pre-flight validation script
+bash "${CLAUDE_PLUGIN_ROOT}/.claude/skills/interaction-recorder/scripts/validate-workspace.sh" \
+  "$WORKSPACE" "$APP_URL"
+```
+
+If the script is not available, run these checks manually:
 
 ```bash
 echo "═══ Pre-flight Check ═══"
