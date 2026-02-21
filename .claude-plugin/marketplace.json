@@ -1,19 +1,34 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "interaction-recorder",
+  "metadata": {
+    "description": "Record polished demo videos of any codebase's UI with narration, sound design, and motion graphics"
+  },
   "owner": {
     "name": "Prakhar Bhardwaj",
     "url": "https://github.com/prakhar625"
   },
-  "metadata": {
-    "description": "Record polished demo videos of any codebase's UI with narration, sound design, and motion graphics",
-    "version": "1.0.0"
-  },
   "plugins": [
     {
       "name": "interaction-recorder",
-      "source": ".",
-      "description": "Record polished demo videos of any codebase's UI — from quick screen captures to fully narrated, annotated productions with graphics, sound design, and transitions. Uses Playwright for browser automation, Remotion for video compositing, and supports TTS, image generation, and sound design.",
-      "version": "1.0.0"
+      "description": "Record polished demo videos of any codebase's UI with narration, sound design, and motion graphics. Uses Playwright for browser automation, Remotion for video compositing, and supports TTS, image generation, and sound design.",
+      "version": "2026.2.20.2142",
+      "author": {
+        "name": "Prakhar Bhardwaj",
+        "url": "https://github.com/prakhar625"
+      },
+      "source": "./",
+      "category": "video-production",
+      "homepage": "https://github.com/prakhar625/interaction-recorder",
+      "tags": [
+        "video",
+        "automation",
+        "playwright",
+        "remotion",
+        "tts",
+        "sound-design",
+        "motion-graphics"
+      ]
     }
   ]
 }

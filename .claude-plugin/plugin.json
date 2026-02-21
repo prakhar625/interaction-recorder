@@ -5,5 +5,7 @@
   "author": {
     "name": "Prakhar Bhardwaj",
     "url": "https://github.com/prakhar625"
-  }
+  },
+  "commands": "./.claude/commands",
+  "skills": "./.claude/skills"
 }
