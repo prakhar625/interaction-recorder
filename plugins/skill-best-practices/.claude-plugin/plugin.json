@@ -1,0 +1,8 @@
+{
+  "name": "skill-best-practices",
+  "description": "Comprehensive guide for building Claude Code skills and plugins. Teaches best practices and interactively scaffolds new skills.",
+  "author": {
+    "name": "Prakhar Bhardwaj",
+    "url": "https://github.com/prakhar625"
+  }
+}
