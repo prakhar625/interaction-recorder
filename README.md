@@ -10,6 +10,8 @@ A collection of Claude Code plugins for creative and developer workflows.
 |--------|-------------|------|
 | **[interaction-recorder](plugins/interaction-recorder/)** | Record polished demo videos of any codebase's UI — narration, sound design, motion graphics, and transitions | [docs/interaction-recorder.md](docs/interaction-recorder.md) |
 | **[skill-best-practices](plugins/skill-best-practices/)** | Comprehensive guide for building Claude Code skills and plugins, with an interactive `/create-skill` wizard | [docs/skill-best-practices.md](docs/skill-best-practices.md) |
+| **[image-gen](plugins/image-gen/)** | Generate, edit, and enhance images using FAL AI — 13 models including Imagen 4, FLUX.2, Grok Imagine, and Seedream | [docs/image-gen.md](docs/image-gen.md) |
+| **[visual-documentation](plugins/visual-documentation/)** | Create architecture diagrams, flowcharts, lo-fi wireframes, technical docs, and project timelines — HTML, Mermaid, and DOT formats | [docs/visual-documentation.md](docs/visual-documentation.md) |
 
 ---
 
@@ -45,13 +47,29 @@ Then enable in Claude Code with `/plugin`. Restart after installing.
 │   │   ├── commands/
 │   │   ├── skills/interaction-recorder/
 │   │   └── hooks/
-│   └── skill-best-practices/         # Skill development guide plugin
+│   ├── skill-best-practices/         # Skill development guide plugin
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   └── skills/skill-best-practices/
+│   ├── image-gen/                    # FAL AI image generation plugin
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   ├── skills/image-gen/
+│   │   └── hooks/
+│   └── visual-documentation/         # Visual documentation plugin
 │       ├── .claude-plugin/plugin.json
 │       ├── commands/
-│       └── skills/skill-best-practices/
+│       └── skills/
+│           ├── architecture-diagram-creator/
+│           ├── flowchart-creator/
+│           ├── mockup-creator/
+│           ├── technical-doc-creator/
+│           └── timeline-creator/
 ├── docs/                             # Per-plugin documentation
 │   ├── interaction-recorder.md
-│   └── skill-best-practices.md
+│   ├── skill-best-practices.md
+│   ├── image-gen.md
+│   └── visual-documentation.md
 ├── README.md
 └── LICENSE
 ```
