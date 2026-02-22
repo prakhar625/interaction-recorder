@@ -1,0 +1,8 @@
+{
+  "name": "visual-documentation",
+  "description": "Create visual documentation — architecture diagrams (HTML/Mermaid/DOT), flowcharts (HTML/Mermaid/DOT), lo-fi mockups, technical docs, and project timelines.",
+  "author": {
+    "name": "Prakhar Bhardwaj",
+    "url": "https://github.com/prakhar625"
+  }
+}

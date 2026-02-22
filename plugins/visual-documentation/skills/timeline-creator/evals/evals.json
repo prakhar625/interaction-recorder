@@ -1,0 +1,47 @@
+[
+  {
+    "name": "gantt-from-tasks",
+    "prompt": "Create a Gantt chart for our Q1 project with these tasks: Design (Jan 1-15), Development (Jan 10 - Feb 28), Testing (Feb 15 - Mar 10), Launch (Mar 15)",
+    "expected_trigger": "timeline-creator",
+    "expected_behaviors": [
+      "Generates a Gantt chart HTML file",
+      "Bar positions are proportional to the date ranges provided",
+      "A 'Today' vertical marker is included",
+      "Tasks are grouped into a named phase or workstream",
+      "Status colors applied (planned/in-progress based on dates relative to today)"
+    ]
+  },
+  {
+    "name": "milestone-timeline",
+    "prompt": "Show our product milestones for this year on a timeline: Beta launch Mar 1, GA April 15, v2.0 Sep 1, EOY release Dec 1",
+    "expected_trigger": "timeline-creator",
+    "expected_behaviors": [
+      "Uses a horizontal milestone timeline (not a Gantt bar chart)",
+      "Each milestone has a point marker and date label",
+      "Labels alternate above/below the axis to avoid overlap",
+      "Today marker present"
+    ]
+  },
+  {
+    "name": "quarter-roadmap",
+    "prompt": "Create a Q1-Q4 product roadmap for our mobile app",
+    "expected_trigger": "timeline-creator",
+    "expected_behaviors": [
+      "Uses a quarter-based grid layout (Q1, Q2, Q3, Q4 columns)",
+      "Workstreams as rows (e.g., iOS, Android, Backend, Design)",
+      "Feature cards in cells with status colors",
+      "No day-level dates required"
+    ]
+  },
+  {
+    "name": "today-marker-correct",
+    "prompt": "Make a project timeline for our 6-month migration project starting this month",
+    "expected_trigger": "timeline-creator",
+    "expected_behaviors": [
+      "Today marker positioned correctly relative to the date range",
+      "All tasks have names assigned to a phase",
+      "Completion percentage shown if tasks are partially done",
+      "File saved as [project-name]-timeline.html"
+    ]
+  }
+]

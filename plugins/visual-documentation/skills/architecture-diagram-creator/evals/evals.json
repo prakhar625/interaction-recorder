@@ -1,0 +1,55 @@
+[
+  {
+    "name": "html-architecture-from-codebase",
+    "prompt": "Create an architecture diagram for this project",
+    "expected_trigger": "architecture-diagram-creator",
+    "expected_behaviors": [
+      "Asks or confirms output format (HTML, Mermaid, or DOT)",
+      "Analyzes codebase to identify real components before drawing",
+      "Produces a diagram with semantic color coding",
+      "For HTML: includes at least Business Context, Data Flow, and System Architecture sections"
+    ]
+  },
+  {
+    "name": "mermaid-architecture",
+    "prompt": "Generate a Mermaid architecture diagram showing the service dependencies",
+    "expected_trigger": "architecture-diagram-creator",
+    "expected_behaviors": [
+      "Produces a fenced ```mermaid code block",
+      "Uses graph TD or graph LR with subgraphs for grouping",
+      "Applies classDef for semantic colors",
+      "Edge labels describe what flows between services"
+    ]
+  },
+  {
+    "name": "dot-graphviz",
+    "prompt": "Create a Graphviz DOT diagram of our system architecture",
+    "expected_trigger": "architecture-diagram-creator",
+    "expected_behaviors": [
+      "Saves a .dot file with the system name in the filename",
+      "Uses subgraph cluster_ blocks for logical groupings",
+      "Includes rendering commands in a comment header",
+      "Semantic fill colors applied to all nodes"
+    ]
+  },
+  {
+    "name": "c4-context-diagram",
+    "prompt": "Create a C4 context diagram showing our system and its external dependencies",
+    "expected_trigger": "architecture-diagram-creator",
+    "expected_behaviors": [
+      "Uses Mermaid C4Context syntax",
+      "Includes Person, System, System_Ext, and Rel declarations",
+      "Shows users and external systems at the correct boundary level"
+    ]
+  },
+  {
+    "name": "no-placeholder-data",
+    "prompt": "Draw an architecture diagram of our authentication service",
+    "expected_trigger": "architecture-diagram-creator",
+    "expected_behaviors": [
+      "Reads relevant code/docs before drawing",
+      "Does not invent components that are not present in the codebase",
+      "Asks clarifying questions if the system is not clear from available files"
+    ]
+  }
+]
