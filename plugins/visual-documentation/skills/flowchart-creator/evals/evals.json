@@ -1,0 +1,57 @@
+[
+  {
+    "name": "html-process-flowchart",
+    "prompt": "Create a flowchart for our user registration process",
+    "expected_trigger": "flowchart-creator",
+    "expected_behaviors": [
+      "Asks or confirms output format (HTML, Mermaid, or DOT)",
+      "Maps all steps: start, input, validation, DB write, email send, end",
+      "Includes a decision diamond for validation with labeled Yes/No branches",
+      "Every branch reaches a terminal node"
+    ]
+  },
+  {
+    "name": "mermaid-decision-tree",
+    "prompt": "Make a Mermaid decision tree for our pricing logic",
+    "expected_trigger": "flowchart-creator",
+    "expected_behaviors": [
+      "Produces a fenced ```mermaid code block",
+      "Uses flowchart TD or LR with diamond decision nodes",
+      "Decision branches are labeled with conditions",
+      "classDef applied to node types with semantic colors"
+    ]
+  },
+  {
+    "name": "dot-workflow",
+    "prompt": "Create a Graphviz flowchart of our CI/CD pipeline",
+    "expected_trigger": "flowchart-creator",
+    "expected_behaviors": [
+      "Saves a .dot file",
+      "Includes rendering commands in a header comment",
+      "Stadium shapes for start/end, box for steps, diamond for decisions",
+      "All decision edges labeled"
+    ]
+  },
+  {
+    "name": "sequence-interaction",
+    "prompt": "Draw a sequence diagram for the OAuth2 login flow",
+    "expected_trigger": "flowchart-creator",
+    "expected_behaviors": [
+      "Uses Mermaid sequenceDiagram syntax",
+      "Includes actor and participant declarations",
+      "alt/else blocks for conditional paths",
+      "Shows request and response arrows with labels"
+    ]
+  },
+  {
+    "name": "swimlane-diagram",
+    "prompt": "Create a swim lane diagram showing how an order moves through our system",
+    "expected_trigger": "flowchart-creator",
+    "expected_behaviors": [
+      "Groups steps by actor/system in swim lanes",
+      "Handoff arrows cross lane boundaries",
+      "Each lane is labeled with the actor/system name",
+      "All paths terminate"
+    ]
+  }
+]

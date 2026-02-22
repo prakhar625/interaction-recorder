@@ -1,0 +1,56 @@
+[
+  {
+    "name": "landing-page-wireframe",
+    "prompt": "Create a wireframe for our landing page",
+    "expected_trigger": "mockup-creator",
+    "expected_behaviors": [
+      "Produces a grayscale lo-fi wireframe (no brand colors)",
+      "Includes Navbar, Hero, Feature Grid, and Footer sections",
+      "All content is placeholder text (Lorem ipsum or [ Label ] style)",
+      "Every placeholder box has a descriptive annotation label"
+    ]
+  },
+  {
+    "name": "mobile-form-mockup",
+    "prompt": "Make a lo-fi mockup of the user profile settings screen on mobile",
+    "expected_trigger": "mockup-creator",
+    "expected_behaviors": [
+      "Single-column layout (mobile-appropriate)",
+      "Form fields shown as plain input boxes with labels",
+      "Grayscale only — no colors or real imagery",
+      "Saves as [screen-name]-wireframe.html or outputs ASCII"
+    ]
+  },
+  {
+    "name": "dashboard-wireframe",
+    "prompt": "Sketch a wireframe for a dashboard screen with some charts and a data table",
+    "expected_trigger": "mockup-creator",
+    "expected_behaviors": [
+      "Shows sidebar nav + main content area layout",
+      "KPI cards shown as labeled placeholder boxes",
+      "Chart areas shown as placeholder boxes (not real SVG charts)",
+      "Table rows shown as repeating placeholder rows"
+    ]
+  },
+  {
+    "name": "no-real-data-gate",
+    "prompt": "Create a mockup for our user profile page",
+    "expected_trigger": "mockup-creator",
+    "expected_behaviors": [
+      "Does not use any real user data or names",
+      "Profile image shown as a gray placeholder circle or box",
+      "Text fields filled with [User Name], [Email], etc.",
+      "No brand colors applied"
+    ]
+  },
+  {
+    "name": "ascii-wireframe",
+    "prompt": "Give me a quick ASCII wireframe of a login page",
+    "expected_trigger": "mockup-creator",
+    "expected_behaviors": [
+      "Outputs an ASCII art wireframe inline in the conversation",
+      "Shows form fields, labels, and buttons as ASCII characters",
+      "No HTML file generated unless explicitly asked"
+    ]
+  }
+]

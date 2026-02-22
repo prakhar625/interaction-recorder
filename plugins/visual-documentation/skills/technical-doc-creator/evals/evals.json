@@ -1,0 +1,54 @@
+[
+  {
+    "name": "rest-api-docs",
+    "prompt": "Generate API documentation for our REST endpoints",
+    "expected_trigger": "technical-doc-creator",
+    "expected_behaviors": [
+      "Reads the codebase to discover actual endpoints before writing",
+      "Documents each endpoint with method, path, parameters, and response",
+      "Uses semantic HTTP method badge colors (GET=green, POST=blue, DELETE=red)",
+      "Saves as [system-name]-docs.html"
+    ]
+  },
+  {
+    "name": "library-docs",
+    "prompt": "Create developer documentation for our TypeScript SDK",
+    "expected_trigger": "technical-doc-creator",
+    "expected_behaviors": [
+      "Includes Overview, Getting Started, and API Reference sections",
+      "Quick start code example is syntactically correct TypeScript",
+      "All function parameters documented with name, type, and required/optional",
+      "Syntax highlighting applied to code blocks"
+    ]
+  },
+  {
+    "name": "getting-started-guide",
+    "prompt": "Write a getting started guide for developers onboarding to our service",
+    "expected_trigger": "technical-doc-creator",
+    "expected_behaviors": [
+      "Installation commands are real (reads package.json or similar)",
+      "Quick start example runs successfully with copy-paste",
+      "Step-by-step format with clear prerequisites listed"
+    ]
+  },
+  {
+    "name": "no-invented-endpoints",
+    "prompt": "Document the API for our payment service",
+    "expected_trigger": "technical-doc-creator",
+    "expected_behaviors": [
+      "Reads actual source files before documenting",
+      "Does not invent endpoints that don't exist in the codebase",
+      "Asks user if endpoints are unclear from available source"
+    ]
+  },
+  {
+    "name": "accurate-methods",
+    "prompt": "Create docs for the user management endpoints",
+    "expected_trigger": "technical-doc-creator",
+    "expected_behaviors": [
+      "HTTP methods match the actual route definitions in code",
+      "POST is not used for read operations",
+      "Error responses (401, 403, 404, 422) documented where applicable"
+    ]
+  }
+]

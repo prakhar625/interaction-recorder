@@ -65,6 +65,32 @@
         "seedream",
         "ai-art"
       ]
+    },
+    {
+      "name": "visual-documentation",
+      "description": "Create visual documentation: architecture diagrams (HTML/Mermaid/DOT), flowcharts (HTML/Mermaid/DOT), lo-fi wireframe mockups, HTML technical docs with syntax highlighting, and project timelines/Gantt charts/roadmaps.",
+      "version": "2026.2.22.0001",
+      "author": {
+        "name": "Prakhar Bhardwaj",
+        "url": "https://github.com/prakhar625"
+      },
+      "source": "./plugins/visual-documentation",
+      "category": "documentation",
+      "tags": [
+        "architecture-diagram",
+        "flowchart",
+        "wireframe",
+        "mockup",
+        "technical-docs",
+        "timeline",
+        "gantt",
+        "roadmap",
+        "mermaid",
+        "graphviz",
+        "dot",
+        "html",
+        "visualization"
+      ]
     }
   ]
 }
