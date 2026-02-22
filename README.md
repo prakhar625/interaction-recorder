@@ -20,15 +20,15 @@ A collection of Claude Code plugins for creative and developer workflows.
 ### From Marketplace
 
 ```
-/plugin marketplace add prakhar625/interaction-recorder
-/plugin install interaction-recorder@<plugin-name>
+/plugin marketplace add prakhar625/my-plugins
+/plugin install my-plugins@<plugin-name>
 ```
 
 ### Manual
 
 ```bash
-git clone https://github.com/prakhar625/interaction-recorder.git
-cp -r interaction-recorder/plugins/<plugin-name> ~/.claude/plugins/
+git clone https://github.com/prakhar625/my-plugins.git
+cp -r my-plugins/plugins/<plugin-name> ~/.claude/plugins/
 ```
 
 Then enable in Claude Code with `/plugin`. Restart after installing.
@@ -53,8 +53,12 @@ Then enable in Claude Code with `/plugin`. Restart after installing.
 │   │   └── skills/skill-best-practices/
 │   ├── image-gen/                    # FAL AI image generation plugin
 │   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/
 │   │   ├── commands/
-│   │   ├── skills/image-gen/
+│   │   ├── skills/
+│   │   │   ├── image-gen/
+│   │   │   ├── image-edit/
+│   │   │   └── image-enhance/
 │   │   └── hooks/
 │   └── visual-documentation/         # Visual documentation plugin
 │       ├── .claude-plugin/plugin.json
