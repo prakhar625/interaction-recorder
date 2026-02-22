@@ -4,6 +4,7 @@ package-lock.json
 
 # Output
 interaction-recorder-workspace/
+image-gen-workspace/
 output/
 *.mp4
 *.wav

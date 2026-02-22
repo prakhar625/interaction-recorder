@@ -1,0 +1,173 @@
+{
+  "test_cases": [
+    {
+      "name": "Basic T2I generation",
+      "prompt": "Generate an image of a sunset over a mountain lake",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Activates the image-gen skill",
+        "Auto-selects an appropriate model (FLUX.2 [pro] or similar)",
+        "Constructs a detailed prompt from the user description",
+        "Executes FAL API call via scripts/fal-submit.sh",
+        "Downloads and saves image to ./output/image-gen/",
+        "Presents the generated image with metadata"
+      ]
+    },
+    {
+      "name": "T2I with specific model request",
+      "prompt": "Create a cinematic portrait using Grok Imagine",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Respects user's model choice (Grok Imagine)",
+        "Uses endpoint xai/grok-imagine-image",
+        "Crafts a cinematic-style prompt",
+        "Does NOT override with a different model"
+      ]
+    },
+    {
+      "name": "T2I with text rendering",
+      "prompt": "Generate a poster with the text 'Hello World' in large letters",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Selects Nano Banana Pro for text rendering",
+        "Includes exact text content in the prompt",
+        "Specifies text placement and style"
+      ]
+    },
+    {
+      "name": "T2I logo concept",
+      "prompt": "Create a logo concept for a coffee shop called Brew & Bean",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Activates image-gen skill",
+        "Selects a model good at logos/text (Nano Banana Pro or FLUX.2 [pro])",
+        "Constructs a prompt appropriate for logo design",
+        "Uses square aspect ratio"
+      ]
+    },
+    {
+      "name": "T2I with reference image",
+      "prompt": "Generate an image in the same style as this reference photo: ./photo.jpg",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Spawns image-analyst agent to analyze reference",
+        "Extracts style profile from the reference",
+        "Feeds style profile into prompt-architect",
+        "Generated image reflects the reference style"
+      ]
+    },
+    {
+      "name": "Image editing - style transfer",
+      "prompt": "Edit this image to look like a watercolor painting: ./photo.jpg",
+      "expected_trigger": "image-edit",
+      "expected_behaviors": [
+        "Activates image-edit skill",
+        "Validates source image exists",
+        "Selects appropriate edit model (Seedream v4.5 or Grok Imagine)",
+        "Sets guidance_scale appropriately for style transfer",
+        "Presents before/after comparison"
+      ]
+    },
+    {
+      "name": "Image editing - background change",
+      "prompt": "Change the background of this photo to a tropical beach",
+      "expected_trigger": "image-edit",
+      "expected_behaviors": [
+        "Activates image-edit skill",
+        "Constructs edit prompt focused on the change",
+        "Does NOT describe the entire scene",
+        "Uses moderate guidance_scale (5-7)"
+      ]
+    },
+    {
+      "name": "Image upscaling",
+      "prompt": "Upscale this image to higher resolution",
+      "expected_trigger": "image-enhance",
+      "expected_behaviors": [
+        "Activates image-enhance skill",
+        "Assesses current image quality/dimensions",
+        "Selects appropriate upscaler (SeedVR2 for quality, ESRGAN for speed)",
+        "Presents before/after with resolution comparison"
+      ]
+    },
+    {
+      "name": "Image enhancement with use case",
+      "prompt": "Enhance this photo for print at 8x10 inches",
+      "expected_trigger": "image-enhance",
+      "expected_behaviors": [
+        "Activates image-enhance skill",
+        "Calculates required resolution (2400x3000 at 300 DPI)",
+        "Determines if upscaling is needed",
+        "Optimizes output for print use case"
+      ]
+    },
+    {
+      "name": "Model listing command",
+      "prompt": "/image-models",
+      "expected_trigger": "image-models command",
+      "expected_behaviors": [
+        "Reads references/model-catalog.md",
+        "Displays all available models in a clear table",
+        "Shows endpoints, capabilities, and pricing",
+        "Includes quick reference recommendations"
+      ]
+    },
+    {
+      "name": "Generate with Imagen 4",
+      "prompt": "Generate a detailed landscape with Imagen 4",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Uses fal-ai/imagen4/preview endpoint",
+        "Crafts a detail-oriented prompt for Imagen 4",
+        "Does NOT use a different model"
+      ]
+    },
+    {
+      "name": "Generate with Seedream",
+      "prompt": "Use Seedream to create a photorealistic portrait",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Uses fal-ai/bytedance/seedream/v4.5/text-to-image endpoint",
+        "Keeps prompt between 30-100 words",
+        "Sets guidance_scale between 7-9"
+      ]
+    },
+    {
+      "name": "Fast draft generation",
+      "prompt": "Quickly generate a draft image of a cat sitting on a desk",
+      "expected_trigger": "image-gen",
+      "expected_behaviors": [
+        "Selects FLUX.2 Flash or FLUX.2 [klein] for speed",
+        "Uses concise prompt",
+        "Prioritizes speed over quality"
+      ]
+    },
+    {
+      "name": "Non-trigger - video recording",
+      "prompt": "Record a video of my app's dashboard",
+      "expected_trigger": "NOT image-gen, image-edit, or image-enhance",
+      "expected_behaviors": [
+        "Does NOT activate any image-gen skill",
+        "This is a video recording request, not image generation"
+      ]
+    },
+    {
+      "name": "Non-trigger - screenshot",
+      "prompt": "Take a screenshot of localhost:3000",
+      "expected_trigger": "NOT image-gen, image-edit, or image-enhance",
+      "expected_behaviors": [
+        "Does NOT activate image-gen skills",
+        "Screenshots are browser operations, not AI image generation"
+      ]
+    },
+    {
+      "name": "Non-trigger - code writing",
+      "prompt": "Write a function that generates a random number",
+      "expected_trigger": "NOT image-gen, image-edit, or image-enhance",
+      "expected_behaviors": [
+        "Does NOT activate image-gen skills",
+        "'Generate' here refers to code, not images"
+      ]
+    }
+  ]
+}
