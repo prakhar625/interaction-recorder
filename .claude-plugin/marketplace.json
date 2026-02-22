@@ -43,6 +43,28 @@
         "developer-tools",
         "meta"
       ]
+    },
+    {
+      "name": "image-gen",
+      "description": "Generate, edit, and enhance images using FAL AI models. Supports text-to-image, image-to-image editing, and upscaling with intelligent model selection across Imagen 4, Grok Imagine, Seedream, Nano Banana, FLUX.2, and more.",
+      "version": "2026.2.22.0001",
+      "author": {
+        "name": "Prakhar Bhardwaj",
+        "url": "https://github.com/prakhar625"
+      },
+      "source": "./plugins/image-gen",
+      "category": "image-generation",
+      "tags": [
+        "image-generation",
+        "fal-ai",
+        "text-to-image",
+        "image-editing",
+        "upscaling",
+        "flux",
+        "imagen",
+        "seedream",
+        "ai-art"
+      ]
     }
   ]
 }

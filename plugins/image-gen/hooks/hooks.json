@@ -1,0 +1,18 @@
+{
+  "description": "Image Gen plugin hooks for FAL AI environment validation",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/validate-fal-env.sh",
+            "timeout": 5,
+            "statusMessage": "Checking FAL AI environment..."
+          }
+        ]
+      }
+    ]
+  }
+}

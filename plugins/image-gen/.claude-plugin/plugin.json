@@ -1,0 +1,8 @@
+{
+  "name": "image-gen",
+  "description": "Generate, edit, and enhance images using FAL AI models. Supports text-to-image, image-to-image editing, and upscaling with intelligent model selection across Imagen 4, Grok Imagine, Seedream, Nano Banana, FLUX.2, and more.",
+  "author": {
+    "name": "Prakhar Bhardwaj",
+    "url": "https://github.com/prakhar625"
+  }
+}
